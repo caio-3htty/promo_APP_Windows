@@ -1,4 +1,4 @@
-name: windows-ci
+name: desktop-ci
 
 on:
   pull_request:
@@ -8,13 +8,26 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - ubuntu-latest
     env:
+      PRUMO_WEB_CLIENT_DIR: ./prumo-web-client
       VITE_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-      VITE_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Checkout web client
+        uses: actions/checkout@v4
+        with:
+          repository: caio-3htty/prumo-web-client
+          path: prumo-web-client
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -25,5 +38,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build web app
-        run: npm run build
+      - name: Install web dependencies
+        run: npm --prefix ./prumo-web-client ci
+
+      - name: Prepare embedded web bundle
+        run: npm run desktop:prepare:web

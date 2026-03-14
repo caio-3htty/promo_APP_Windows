@@ -1,8 +1,18 @@
 const { app, BrowserWindow, shell } = require("electron");
+const fs = require("fs");
 const path = require("path");
 
 const isDev = !app.isPackaged;
-const devUrl = process.env.VITE_DEV_SERVER_URL || "http://localhost:5190";
+const devUrl = process.env.WEB_DEV_SERVER_URL || "http://127.0.0.1:8080";
+
+function resolveEmbeddedIndexPath() {
+  const packagedPath = path.join(process.resourcesPath, "web-dist", "index.html");
+  if (fs.existsSync(packagedPath)) {
+    return packagedPath;
+  }
+
+  return path.join(__dirname, "..", "web-dist", "index.html");
+}
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -23,7 +33,7 @@ function createWindow() {
     win.loadURL(devUrl);
     win.webContents.openDevTools({ mode: "detach" });
   } else {
-    win.loadFile(path.join(__dirname, "..", "dist", "index.html"));
+    win.loadFile(resolveEmbeddedIndexPath());
   }
 
   win.webContents.setWindowOpenHandler(({ url }) => {
