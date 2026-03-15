@@ -27,11 +27,16 @@ function resolveWebClientDir() {
 }
 
 const webClientDir = resolveWebClientDir();
-const command = process.platform === "win32" ? "npm.cmd" : "npm";
-const result = spawnSync(command, ["run", "build:embedded"], {
+const result = spawnSync("npm run build:embedded", {
   cwd: webClientDir,
+  shell: true,
   stdio: "inherit",
 });
+
+if (result.error) {
+  console.error(`Failed to execute embedded web build: ${result.error.message}`);
+  process.exit(1);
+}
 
 if (result.status !== 0) {
   process.exit(result.status ?? 1);
