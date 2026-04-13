@@ -1,6 +1,7 @@
 # Promo App Windows
 
 Shell Electron dedicado ao Windows que carrega o `promo_APP_Web`.
+O shell usa particao persistente (`persist:promo`) e bridge segura para sessao/desbloqueio rapido.
 
 ## Stack
 - Electron
@@ -30,6 +31,11 @@ Artefatos em `release/`.
 Build embutido do web usa as variaveis do `promo_APP_Web`:
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_PUBLISHABLE_KEY`
+
+## Sessao e desbloqueio rapido
+- Sessao permanece ativa por politica operacional (30 dias) no cliente.
+- Tokens/sessao no desktop usam bridge segura (cofre local criptografado pelo SO quando disponivel).
+- Primeiro login no desktop solicita configuracao de PIN para desbloqueio rapido.
 
 ## GitHub Actions
 - `desktop-ci`: valida preparacao do bundle web embutido em Windows.
